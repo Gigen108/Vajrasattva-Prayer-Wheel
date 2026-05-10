@@ -7,11 +7,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
 
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
       background: #000;
@@ -25,7 +21,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       height: 100vh;
     }
 
@@ -36,17 +31,17 @@
       text-transform: uppercase;
       color: #f0ece4;
       text-align: center;
-      padding: 1.5rem 2rem 0.5rem;
+      padding: 1.4rem 2rem 0.4rem;
       flex-shrink: 0;
     }
 
     .dedication {
-      font-size: clamp(0.75rem, 1.4vw, 0.95rem);
+      font-size: clamp(0.72rem, 1.4vw, 0.92rem);
       font-style: italic;
       color: #777;
       letter-spacing: 0.06em;
       text-align: center;
-      padding: 0 2rem 1.2rem;
+      padding: 0 2rem 1rem;
       flex-shrink: 0;
     }
 
@@ -57,32 +52,18 @@
       flex-shrink: 0;
     }
 
-    /* Fills remaining vertical space, scrolls background image */
-    .reel-wrapper {
-      width: 100vw;
+    canvas {
+      display: block;
       flex: 1;
-      overflow: hidden;
-      position: relative;
-      background-image: url('vajra-wheel.jpg');
-      background-repeat: repeat-x;
-      background-size: auto 100%;
-      background-position: 0 center;
-      animation: scroll-reel 6s linear infinite;
-      will-change: background-position;
-      filter: grayscale(1) contrast(1.08);
-    }
-
-    @keyframes scroll-reel {
-      0%   { background-position: 0 center; }
-      100% { background-position: -130020px center; }
+      width: 100%;
     }
 
     .mantra-note {
-      font-size: clamp(0.6rem, 1vw, 0.72rem);
-      color: #383838;
+      font-size: clamp(0.58rem, 1vw, 0.7rem);
+      color: #333;
       letter-spacing: 0.1em;
       text-align: center;
-      padding: 0.7rem 2rem 1.2rem;
+      padding: 0.6rem 2rem 1rem;
       flex-shrink: 0;
     }
   </style>
@@ -91,14 +72,59 @@
 
   <div class="title">Vajrasattva Prayer Wheel</div>
   <div class="dedication">Dedicated to Samantabhadra Buddha and the Complete Liberation of All Beings</div>
-
   <div class="reel-border"></div>
-
-  <div class="reel-wrapper" role="img" aria-label="Vajrasattva 100 Syllable Mantra — 100,000,000 recitations"></div>
-
+  <canvas id="reel" aria-label="Vajrasattva 100 Syllable Mantra — 100,000,000 recitations"></canvas>
   <div class="reel-border"></div>
-
   <div class="mantra-note">oṃ vajrasattva samaya manupālaya · 100,000,000 recitations</div>
+
+  <script>
+    const canvas = document.getElementById('reel');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.src = 'vajra-wheel.jpg';
+
+    // Pixels per second — increase this number to go faster
+    const SPEED = 800;
+
+    let offset = 0;
+    let lastTime = null;
+    let scaledW = 0;
+
+    function resize() {
+      canvas.width = canvas.offsetWidth * devicePixelRatio;
+      canvas.height = canvas.offsetHeight * devicePixelRatio;
+      // Scale image so its height fills the canvas height exactly
+      if (img.naturalWidth > 0) {
+        scaledW = img.naturalWidth * (canvas.height / img.naturalHeight);
+      }
+    }
+
+    function draw(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const delta = (timestamp - lastTime) / 1000; // seconds
+      lastTime = timestamp;
+
+      offset = (offset + SPEED * devicePixelRatio * delta) % scaledW;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw tiles from left edge to right, offset so it starts mid-image for seamlessness
+      let x = -offset;
+      while (x < canvas.width) {
+        ctx.drawImage(img, x, 0, scaledW, canvas.height);
+        x += scaledW;
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    img.onload = () => {
+      resize();
+      requestAnimationFrame(draw);
+    };
+
+    window.addEventListener('resize', resize);
+  </script>
 
 </body>
 </html>
