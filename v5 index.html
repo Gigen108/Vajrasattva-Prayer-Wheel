@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vajrasattva Prayer Wheel</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #000;
+      color: #f0ece4;
+      font-family: Georgia, serif;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .title {
+      font-size: 1.2rem;
+      font-weight: normal;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 1.2rem 2rem 0.3rem;
+      flex-shrink: 0;
+    }
+
+    .dedication {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: #888;
+      text-align: center;
+      padding: 0 2rem 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .reel-border {
+      width: 100%;
+      height: 1px;
+      background: #2a2a2a;
+      flex-shrink: 0;
+    }
+
+    canvas {
+      display: block;
+      flex: 1;
+      width: 100%;
+      /* canvas height is set by JS */
+    }
+
+    .mantra-note {
+      font-size: 0.65rem;
+      color: #333;
+      letter-spacing: 0.1em;
+      text-align: center;
+      padding: 0.5rem 2rem 0.9rem;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="title">Vajrasattva Prayer Wheel</div>
+  <div class="dedication">Dedicated to Samantabhadra Buddha and the Complete Liberation of All Beings</div>
+  <div class="reel-border"></div>
+  <canvas id="reel"></canvas>
+  <div class="reel-border"></div>
+  <div class="mantra-note">oṃ vajrasattva samaya manupālaya · 100,000,000 recitations</div>
+
+  <script>
+    const canvas = document.getElementById('reel');
+    const ctx = canvas.getContext('2d');
+
+    const SPEED = 600; // pixels per second — raise to go faster
+
+    const img = new Image();
+    img.src = 'vajra-wheel.jpg';
+
+    let offset = 0;
+    let last = null;
+    let tileW = 1; // will be set once image loads and canvas is sized
+
+    function setSize() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      // Scale tile width so image height == canvas height
+      if (img.naturalHeight > 0) {
+        tileW = img.naturalWidth * (canvas.height / img.naturalHeight);
+      }
+    }
+
+    function loop(ts) {
+      if (!last) last = ts;
+      const dt = (ts - last) / 1000;
+      last = ts;
+
+      offset = (offset + SPEED * dt) % tileW;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Moving left-to-right (clockwise): anchor at left, shift right by offset
+      // Start far enough left that the screen is always covered
+      const startX = (offset % tileW) - tileW;
+      for (let x = startX; x < canvas.width; x += tileW) {
+        ctx.drawImage(img, x, 0, tileW, canvas.height);
+      }
+
+      requestAnimationFrame(loop);
+    }
+
+    img.onload = () => {
+      setSize();
+      requestAnimationFrame(loop);
+    };
+
+    window.addEventListener('resize', setSize);
+  </script>
+
+</body>
+</html>
