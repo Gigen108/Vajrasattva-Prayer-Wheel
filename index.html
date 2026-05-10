@@ -57,58 +57,24 @@
       flex-shrink: 0;
     }
 
-    /* Masks overflow, fills remaining vertical space */
+    /* Fills remaining vertical space, scrolls background image */
     .reel-wrapper {
       width: 100vw;
       flex: 1;
       overflow: hidden;
       position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    /* Two copies side by side — second copy picked up seamlessly when first exits */
-    .reel-track {
-      display: flex;
-      width: max-content;
-      height: 100%;
-      animation: scroll-reel 22s linear infinite;
-      will-change: transform;
-    }
-
-    @keyframes scroll-reel {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    .reel-track img {
-      height: 100%;
-      width: auto;
-      display: block;
-      flex-shrink: 0;
+      background-image: url('vajra-wheel.jpg');
+      background-repeat: repeat-x;
+      background-size: auto 100%;
+      background-position: 0 center;
+      animation: scroll-reel 6s linear infinite;
+      will-change: background-position;
       filter: grayscale(1) contrast(1.08);
     }
 
-    /* Soft fade at left and right edges — film emerging from darkness */
-    .reel-wrapper::before,
-    .reel-wrapper::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100px;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .reel-wrapper::before {
-      left: 0;
-      background: linear-gradient(to right, #000 0%, transparent 100%);
-    }
-
-    .reel-wrapper::after {
-      right: 0;
-      background: linear-gradient(to left, #000 0%, transparent 100%);
+    @keyframes scroll-reel {
+      0%   { background-position: 0 center; }
+      100% { background-position: -130020px center; }
     }
 
     .mantra-note {
@@ -128,12 +94,7 @@
 
   <div class="reel-border"></div>
 
-  <div class="reel-wrapper">
-    <div class="reel-track">
-      <img src="vajra-wheel.jpg" alt="Vajrasattva 100 Syllable Mantra — 100,000,000 recitations">
-      <img src="vajra-wheel.jpg" alt="" aria-hidden="true">
-    </div>
-  </div>
+  <div class="reel-wrapper" role="img" aria-label="Vajrasattva 100 Syllable Mantra — 100,000,000 recitations"></div>
 
   <div class="reel-border"></div>
 
